@@ -34,3 +34,23 @@ Pre-flight check
 
 Restart NAGIOS - service nagios restart
 
+
+Slack Messaging Webhook
+
+```
+    json_header = {}
+    json_header['Content-Type'] = 'application/json'
+    data={}
+    data['text'] = str(','.join(monitoring_results))
+    data['icon_url'] = 'https://img.icons8.com/emoji/96/000000/penguin--v2.png'
+    data['username'] = 'Perimeter81 API'
+
+    payload = json.dumps(data);
+    #print(payload)
+    #print(slack_data)
+    slack_call = requests.post(slack_url, headers=json_header, data=payload)
+
+    print(slack_call.text)
+    print(slack_call.content)
+    print(slack_call.status_code)
+    ```
