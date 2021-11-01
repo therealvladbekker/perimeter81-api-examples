@@ -43,6 +43,7 @@ curl -X POST -H 'Content-type: application/json' --data '{"text":"Hello, World!"
 
 
 ```
+    slack_url = 'https://hooks.slack.com/services/ALL/SECRETS'
     json_header = {}
     json_header['Content-Type'] = 'application/json'
     data={}
