@@ -1,4 +1,4 @@
-Usage with NAGIOS
+# NAGIOS
 
 Define a command check in **commands.cfg**
 
@@ -35,7 +35,12 @@ Pre-flight check
 Restart NAGIOS - service nagios restart
 
 
-Slack Messaging Webhook
+# Slack Messaging Webhook
+
+ 
+curl -X POST -H 'Content-type: application/json' --data '{"text":"Hello, World!"}' https://hooks.slack.com/services/ALL/SECRETS
+    
+
 
 ```
     json_header = {}
