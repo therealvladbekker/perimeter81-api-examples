@@ -2,9 +2,14 @@ Here is a utility which will allow you to import groups from a properly formatte
 
 Usage:
 ```
-$ python3 createGroups.py
+$ python3 createGroups.py --help
 usage: createGroups.py [-h] --apikey APIKEY [--file FILE]
-createGroups.py: error: the following arguments are required: --apikey/-A
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --apikey APIKEY, -A APIKEY
+                        argument takes in the API key from web portal
+  --file FILE, -F FILE  argument takes in an excel format file with groups/descriptions
 ```
 
 Requirements:
