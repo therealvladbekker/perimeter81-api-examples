@@ -20,5 +20,6 @@ $ pip3 install -r requirements.txt
 ```
 
 Sample XLS file:
+The header with column names is important
 
 ![image](https://user-images.githubusercontent.com/75458081/147141522-9ddaa06b-e359-4534-90ca-a13cd4296c79.png)
