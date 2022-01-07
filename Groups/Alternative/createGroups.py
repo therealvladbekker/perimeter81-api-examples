@@ -61,10 +61,10 @@ json_header['Content-Type'] = 'application/json'
 #json_header['auth'] = 'Bearer ' + token
 
 
-#xls_file = args.file
-#data = pd.read_excel (args.file)
-#df = pd.DataFrame(data, columns= ['GroupName', 'Description'])
-#print(df)
+xls_file = args.file
+data = pd.read_excel (args.file)
+df = pd.DataFrame(data, columns= ['GroupName', 'Description'])
+print(df)
 #exit()
 
 def createGroups(base_url, headers):
