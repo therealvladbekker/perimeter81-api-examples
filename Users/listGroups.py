@@ -101,32 +101,37 @@ def listGroups(base_url, headers):
 	response = requests.get(base_url + url, headers=headers)
 
 	user_json = json.loads(response.text)
+	#pp_json(user_json)
 
-	for user in user_json['data']:
-		if user['terminated'] == False:
-			#print(each['username'])
-			#print(each['id'])
-			id_to_username[user['id']] = user['username']
+	for page in range(1, user_json['totalPage']+1):
+		url = '/v1/users?page=' + str(page)
+		response = requests.get(base_url + url, headers=headers)
+		user_json = json.loads(response.text)
+		pp_json(user_json)
+		for user in user_json['data']:
+			if user['terminated'] == False:
+				#print(each['username'])
+				#print(each['id'])
+				id_to_username[user['id']] = user['username']
 
-			if "lastVPNSuccessLoginAt" in user:
-				new_row_data = [[user['id'], user['username'], user['role'], user['firstName'], user['lastName'],
-								 user['lastVPNSuccessLoginAt']]]
-			else:
-				new_row_data = [[user['id'], user['username'], user['role'], user['firstName'], user['lastName']]]
+				if "lastVPNSuccessLoginAt" in user:
+					new_row_data = [[user['id'], user['username'], user['role'], user['firstName'], user['lastName'],
+									 user['lastVPNSuccessLoginAt']]]
+				else:
+					new_row_data = [[user['id'], user['username'], user['role'], user['firstName'], user['lastName']]]
 
-			# Append 2 new Rows - Columns A - D
-			for row_data in new_row_data:
-				# Append Row Values
-				ws.append(row_data)
+				# Append 2 new Rows - Columns A - D
+				for row_data in new_row_data:
+					# Append Row Values
+					ws.append(row_data)
 
 
-			#print(user['username'])
-			#print(user['tenantId'])
-			#print(user)
+				#print(user['username'])
+				#print(user['tenantId'])
+				#print(user)
 	ws.title = user['tenantId']
 
-	#pp_json(user_data_struct)
-
+	#pp_json(id_to_username)
 
 	#exit()
 
@@ -134,7 +139,7 @@ def listGroups(base_url, headers):
 
 	wb.save("users.xlsx")
 
-	print(wb.sheetnames)
+	#print(wb.sheetnames)
 
 	ws = wb['Groups']
 	ws['A1'].value = 'groupName'
@@ -156,8 +161,8 @@ def listGroups(base_url, headers):
 			if user in id_to_username.keys():
 				plain_user_list_string += (id_to_username[user] + "\n")
 				first_name_last_name = id_to_username[user]
-		print(group['name'])
-		print("      " + plain_user_list_string)
+		#print(group['name'])
+		#print("      " + plain_user_list_string)
 
 		#print("     " + plain_user_list_string)
 		new_row_data = [[group['name'], plain_user_list_string.rstrip("\n")]]
