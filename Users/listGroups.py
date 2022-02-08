@@ -80,9 +80,94 @@ def createGroups(base_url, headers):
 		print(response.text)
 
 def listGroups(base_url, headers):
+
+	id_to_username = {}
+
+	writer = pd.ExcelWriter('users.xlsx', engine='xlsxwriter')
+	writer.save()
+	wb = load_workbook("users.xlsx")
+
+	# Select First Worksheet
+	ws = wb.worksheets[0]
+	ws['A1'].value = 'ID'
+	ws['B1'].value = 'Email'
+	ws['C1'].value = 'Role'
+	ws['D1'].value = 'First Name'
+	ws['E1'].value = 'Last Name'
+	ws['F1'].value = 'Groups'
+	ws['F1'].value = 'Last Login'
+
+	url = '/v1/users'
+	response = requests.get(base_url + url, headers=headers)
+
+	user_json = json.loads(response.text)
+
+	for user in user_json['data']:
+		if user['terminated'] == False:
+			#print(each['username'])
+			#print(each['id'])
+			id_to_username[user['id']] = user['username']
+
+			if "lastVPNSuccessLoginAt" in user:
+				new_row_data = [[user['id'], user['username'], user['role'], user['firstName'], user['lastName'],
+								 user['lastVPNSuccessLoginAt']]]
+			else:
+				new_row_data = [[user['id'], user['username'], user['role'], user['firstName'], user['lastName']]]
+
+			# Append 2 new Rows - Columns A - D
+			for row_data in new_row_data:
+				# Append Row Values
+				ws.append(row_data)
+
+
+			#print(user['username'])
+			#print(user['tenantId'])
+			#print(user)
+	ws.title = user['tenantId']
+
+	#pp_json(user_data_struct)
+
+
+	#exit()
+
+	wb.create_sheet('Groups')
+
+	wb.save("users.xlsx")
+
+	print(wb.sheetnames)
+
+	ws = wb['Groups']
+	ws['A1'].value = 'groupName'
+	ws['B1'].value = 'Users'
+
 	url = '/v1/groups'
 	response = requests.get(base_url + url, headers=headers)
-	pp_json(response.text)
+	groups_json = json.loads(response.text)
+	#pp_json(groups_json['data'])
+	#This will list all the groups and their members
+	#print(type(groups_json))
+	#print(type(groups_json['data']))
+	for group in groups_json['data']:
+		plain_user_list_string = ""
+		#print(group['name'])
+		for user in group['users']:
+			#print("GOT HERE")
+			#print(user)
+			if user in id_to_username.keys():
+				plain_user_list_string += (id_to_username[user] + "\n")
+				first_name_last_name = id_to_username[user]
+		print(group['name'])
+		print("      " + plain_user_list_string)
+
+		#print("     " + plain_user_list_string)
+		new_row_data = [[group['name'], plain_user_list_string.rstrip("\n")]]
+
+		#print(new_row_data)
+		for row_data in new_row_data:
+			# Append Row Values
+			ws.append(row_data)
+
+	wb.save("users.xlsx")
 
 def backupUsers(base_url, headers):
 
@@ -141,22 +226,24 @@ def backupUsers(base_url, headers):
 				ws['C1'].value = 'Role'
 				ws['D1'].value = 'First Name'
 				ws['E1'].value = 'Last Name'
-				ws['F1'].value = 'Groups'
-				ws['G1'].value = 'Last Login'
+				ws['K1'].value = 'Last Login'
 
 				if "lastVPNSuccessLoginAt" in user:
-					new_row_data = [[ user['id'], user['username'], user['role'], user['firstName'], user['lastName'], str(user_groups), user['lastVPNSuccessLoginAt']]]
+					new_row_data = [[user['id'], user['username'], user['role'], user['firstName'], user['lastName'], user['lastVPNSuccessLoginAt']]]
 				else:
-					new_row_data = [[ user['id'], user['username'], user['role'], user['firstName'], user['lastName'], str(user_groups)]]
+					new_row_data = [[user['id'], user['username'], user['role'], user['firstName'], user['lastName']]]
 
 				# Append 2 new Rows - Columns A - D
 				for row_data in new_row_data:
 					# Append Row Values
 					ws.append(row_data)
 
-	wb.save("demo.xlsx")
 
 	print(counter)
+	wb.create_sheet('Groups')
+
+	wb.save("users.xlsx")
+
 
 	# 		# if checkKey(user['idProviders'], 'azureAD'):
 	# 		# 	for group in user['idProviders']['azureAD']['groups']:
@@ -210,9 +297,9 @@ def checkKey(dict, key):
 
 
 #createGroups(base_url, json_header)
-#listGroups(base_url, json_header)
+listGroups(base_url, json_header)
 
-backupUsers(base_url, json_header)
+#backupUsers(base_url, json_header)
 
 
 
