@@ -112,7 +112,9 @@ def listGroups(base_url, headers):
 			if user['terminated'] == False:
 				#print(each['username'])
 				#print(each['id'])
-				id_to_username[user['id']] = user['username']
+				#id_to_username[user['id']] = user['username']
+				id_to_username[user['id']] = {'username' : user['username'],'firstName':user['firstName'], 'lastName': user['lastName']}
+
 
 				if "lastVPNSuccessLoginAt" in user:
 					new_row_data = [[user['id'], user['username'], user['role'], user['firstName'], user['lastName'],
@@ -131,7 +133,7 @@ def listGroups(base_url, headers):
 				#print(user)
 	ws.title = user['tenantId']
 
-	#pp_json(id_to_username)
+	pp_json(id_to_username)
 
 	#exit()
 
@@ -144,28 +146,31 @@ def listGroups(base_url, headers):
 	ws = wb['Groups']
 	ws['A1'].value = 'groupName'
 	ws['B1'].value = 'Users'
+	ws['C1'].value = "Full Name"
 
 	url = '/v1/groups'
 	response = requests.get(base_url + url, headers=headers)
 	groups_json = json.loads(response.text)
 	#pp_json(groups_json['data'])
 	#This will list all the groups and their members
-	#print(type(groups_json))
+	pp_json(groups_json)
 	#print(type(groups_json['data']))
 	for group in groups_json['data']:
 		plain_user_list_string = ""
+		first_name_last_name = ""
 		#print(group['name'])
 		for user in group['users']:
 			#print("GOT HERE")
 			#print(user)
 			if user in id_to_username.keys():
-				plain_user_list_string += (id_to_username[user] + "\n")
-				first_name_last_name = id_to_username[user]
+				plain_user_list_string += (id_to_username[user]['username'] + "\n")
+				first_name_last_name += id_to_username[user]['firstName'] + " " + id_to_username[user]['lastName'] + "\n"
+
 		#print(group['name'])
 		#print("      " + plain_user_list_string)
 
 		#print("     " + plain_user_list_string)
-		new_row_data = [[group['name'], plain_user_list_string.rstrip("\n")]]
+		new_row_data = [[group['name'], plain_user_list_string.rstrip("\n"), first_name_last_name.rstrip("\n")]]
 
 		#print(new_row_data)
 		for row_data in new_row_data:
@@ -190,7 +195,7 @@ def backupUsers(base_url, headers):
 	#pp_json(json_string['totalPage'])
 	writer = pd.ExcelWriter('demo.xlsx', engine='xlsxwriter')
 	writer.save()
-	wb = load_workbook("demo.xlsx")
+	wb = load_workbook("users.xlsx")
 
 	counter = 0
 	for page in range(1, json_string['totalPage']+1):
